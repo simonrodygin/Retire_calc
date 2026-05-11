@@ -38,9 +38,15 @@ def calculate():
             'target_year': round(target_year, 2)
         })
     except Exception as e:
+        err_text = str(e)
+        if err_text == "'>' not supported between instances of 'float' and 'NoneType'":
+            err = "Desired retirement is imposible with this parametrs"
+        else:
+            err = err_text
+        
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': err
         }), 400
 
 if __name__ == '__main__':

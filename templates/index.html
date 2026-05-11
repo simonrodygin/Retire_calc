@@ -187,10 +187,35 @@
             border-radius: 4px;
             color: #c62828;
             margin-top: 20px;
+            align-items: center;
+            gap: 20px;
         }
 
         .error-message.active {
+            display: flex;
+        }
+
+        .error-message .error-text {
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .error-gif {
+            display: none;
+            width: 120px;
+            max-width: 100%;
+            border-radius: 12px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .error-message.with-gif .error-gif {
             display: block;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0); }
         }
 
         @media (max-width: 968px) {
@@ -278,10 +303,12 @@
                     <div class="result-info" id="result-info" style="display: none;">
                         <p>You will reach your target passive income in <strong id="target-year"></strong> years</p>
                     </div>
-                    <img src="{{ url_for('static', filename='tenor.gif') }}" alt="tenor">
                 </div>
 
-                <div class="error-message" id="error-message"></div>
+                <div class="error-message" id="error-message">
+                    <span class="error-text" id="error-text"></span>
+                    <img id="error-gif" class="error-gif" src="{{ url_for('static', filename='ya-sebya-zahuyaril-ia-sebia-zahuyaril.gif') }}" alt="Error animation">
+                </div>
             </div>
         </div>
     </div>
@@ -318,13 +345,25 @@
                     document.getElementById('result-info').style.display = 'block';
                     document.getElementById('plot-container').classList.add('active');
                 } else {
-                    // Show error
-                    document.getElementById('error-message').textContent = 'Error: ' + result.error;
-                    document.getElementById('error-message').classList.add('active');
+                    const errorMessage = document.getElementById('error-message');
+                    const errorText = document.getElementById('error-text');
+
+                    errorText.textContent = 'Error: ' + result.error;
+                    errorMessage.classList.add('active');
+
+                    if (result.error === 'Desired retirement is imposible with this parametrs') {
+                        errorMessage.classList.add('with-gif');
+                    } else {
+                        errorMessage.classList.remove('with-gif');
+                    }
                 }
             } catch (error) {
-                document.getElementById('error-message').textContent = 'Error: ' + error.message;
-                document.getElementById('error-message').classList.add('active');
+                const errorMessage = document.getElementById('error-message');
+                const errorText = document.getElementById('error-text');
+
+                errorText.textContent = 'Error: ' + error.message;
+                errorMessage.classList.add('active');
+                errorMessage.classList.remove('with-gif');
             } finally {
                 document.getElementById('loading').classList.remove('active');
                 document.getElementById('calculate-btn').disabled = false;
